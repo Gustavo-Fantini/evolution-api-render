@@ -15,6 +15,9 @@ RUN npm ci --only=production
 COPY src/ ./src/
 COPY prisma/ ./prisma/
 
+# Set DATABASE_PROVIDER environment variable
+ENV DATABASE_PROVIDER=postgresql
+
 # Generate Prisma client
 RUN npx prisma generate
 

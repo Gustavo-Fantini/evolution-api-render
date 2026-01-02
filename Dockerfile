@@ -56,6 +56,7 @@ COPY --from=builder /evolution/runWithProvider.js ./runWithProvider.js
 COPY --from=builder /evolution/tsup.config.ts ./tsup.config.ts
 
 ENV DOCKER_ENV=true
+ENV DATABASE_PROVIDER=postgresql
 
 EXPOSE 8080
 

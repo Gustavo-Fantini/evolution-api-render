@@ -2,9 +2,8 @@
 
 source ./Docker/scripts/env_functions.sh
 
-if [ "$DOCKER_ENV" != "true" ]; then
-    export_env_vars
-fi
+# Always export env vars to ensure DATABASE_PROVIDER is available
+export_env_vars
 
 if [[ "$DATABASE_PROVIDER" == "postgresql" || "$DATABASE_PROVIDER" == "mysql" || "$DATABASE_PROVIDER" == "psql_bouncer" ]]; then
     export DATABASE_URL

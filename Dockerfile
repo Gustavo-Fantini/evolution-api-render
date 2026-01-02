@@ -24,9 +24,9 @@ COPY ./runWithProvider.js ./
 
 COPY ./Docker ./Docker
 
-RUN chmod +x ./Docker/scripts/* && dos2unix ./Docker/scripts/*
-
 ENV DATABASE_PROVIDER=postgresql
+
+RUN chmod +x ./Docker/scripts/* && dos2unix ./Docker/scripts/*
 
 RUN ./Docker/scripts/generate_database.sh
 
@@ -56,7 +56,6 @@ COPY --from=builder /evolution/runWithProvider.js ./runWithProvider.js
 COPY --from=builder /evolution/tsup.config.ts ./tsup.config.ts
 
 ENV DOCKER_ENV=true
-ENV DATABASE_PROVIDER=postgresql
 
 EXPOSE 8080
 

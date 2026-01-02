@@ -1,0 +1,140 @@
+services:
+  # Evolution API Service
+  - type: web
+    name: evolution-api
+    env: docker
+    dockerfilePath: ./Dockerfile.render
+    dockerContext: .
+    plan: starter
+    region: oregon
+    healthCheck:
+      path: /health
+      timeoutSeconds: 30
+      intervalSeconds: 30
+    envVars:
+      # Server Configuration
+      - key: SERVER_NAME
+        value: evolution
+      - key: SERVER_TYPE
+        value: http
+      - key: SERVER_PORT
+        value: 8080
+        sync: false
+      - key: SERVER_URL
+        value: https://${render.service.hostnames.0}
+        sync: false
+      - key: PORT
+        value: 8080
+        sync: false
+      
+      # Database Configuration (Render PostgreSQL)
+      - key: DATABASE_PROVIDER
+        value: postgresql
+      - key: DATABASE_CONNECTION_URI
+        fromDatabase:
+          name: evolution-db
+          property: connectionString
+      - key: DATABASE_CONNECTION_CLIENT_NAME
+        value: evolution_render
+      - key: DATABASE_SAVE_DATA_INSTANCE
+        value: true
+      - key: DATABASE_SAVE_DATA_NEW_MESSAGE
+        value: true
+      - key: DATABASE_SAVE_MESSAGE_UPDATE
+        value: true
+      - key: DATABASE_SAVE_DATA_CONTACTS
+        value: true
+      - key: DATABASE_SAVE_DATA_CHATS
+        value: true
+      - key: DATABASE_SAVE_DATA_LABELS
+        value: true
+      - key: DATABASE_SAVE_DATA_HISTORIC
+        value: true
+      - key: DATABASE_SAVE_IS_ON_WHATSAPP
+        value: true
+      - key: DATABASE_SAVE_IS_ON_WHATSAPP_DAYS
+        value: 7
+      - key: DATABASE_DELETE_MESSAGE
+        value: true
+      
+      # Cache Configuration (Render Redis)
+      - key: CACHE_REDIS_ENABLED
+        value: true
+      - key: CACHE_REDIS_URI
+        fromService:
+          type: redis
+          name: evolution-redis
+          property: connectionString
+      - key: CACHE_REDIS_TTL
+        value: 604800
+      - key: CACHE_REDIS_PREFIX_KEY
+        value: evolution
+      - key: CACHE_REDIS_SAVE_INSTANCES
+        value: false
+      - key: CACHE_LOCAL_ENABLED
+        value: false
+      
+      # Authentication
+      - key: AUTHENTICATION_API_KEY
+        generateValue: true
+      - key: AUTHENTICATION_EXPOSE_IN_FETCH_INSTANCES
+        value: true
+      
+      # Language and Configuration
+      - key: LANGUAGE
+        value: pt_BR
+      - key: LOG_LEVEL
+        value: ERROR,WARN,INFO,LOG
+      - key: LOG_COLOR
+        value: false
+      - key: CORS_ORIGIN
+        value: "*"
+      - key: CORS_METHODS
+        value: GET,POST,PUT,DELETE
+      - key: CORS_CREDENTIALS
+        value: true
+      
+      # WhatsApp Configuration
+      - key: CONFIG_SESSION_PHONE_CLIENT
+        value: Evolution API
+      - key: CONFIG_SESSION_PHONE_NAME
+        value: Chrome
+      - key: QRCODE_LIMIT
+        value: 30
+      - key: QRCODE_COLOR
+        value: "#175197"
+      
+      # Webhook Configuration
+      - key: WEBHOOK_GLOBAL_ENABLED
+        value: false
+      - key: WEBHOOK_GLOBAL_URL
+        value: ""
+      - key: WEBHOOK_GLOBAL_WEBHOOK_BY_EVENTS
+        value: false
+      
+      # Event Configuration
+      - key: WEBSOCKET_ENABLED
+        value: false
+      - key: RABBITMQ_ENABLED
+        value: false
+      - key: SQS_ENABLED
+        value: false
+      - key: KAFKA_ENABLED
+        value: false
+      - key: PUSHER_ENABLED
+        value: false
+
+  # PostgreSQL Database
+  - type: pserv
+    name: evolution-db
+    plan: starter
+    region: oregon
+    databaseName: evolution_db
+    user: evolution
+
+  # Redis Cache
+  - type: redis
+    name: evolution-redis
+    plan: starter
+    region: oregon
+    ipAllowList: []  # Allow all connections from within Render

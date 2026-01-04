@@ -28,13 +28,11 @@ ENV DATABASE_URL=${DATABASE_URL}
 ENV TZ=America/Sao_Paulo
 ENV DOCKER_ENV=true
 
-# Force rebuild for Render - v2
-
-# Build application
-RUN npm run build
-
-# Generate Prisma client directly - NO SCRIPTS
+# Generate Prisma client FIRST - before TypeScript build
 RUN npx prisma generate --schema ./prisma/postgresql-schema.prisma
+
+# Build application AFTER Prisma client is generated
+RUN npm run build
 
 # Deploy migrations directly - NO SCRIPTS  
 RUN rm -rf ./prisma/migrations && cp -r ./prisma/postgresql-migrations ./prisma/migrations

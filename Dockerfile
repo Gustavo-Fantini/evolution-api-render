@@ -30,6 +30,7 @@ ENV DOCKER_ENV=true
 
 # Override DATABASE_CONNECTION_URI if DATABASE_URL is provided (Render)
 RUN if [ -n "$DATABASE_URL" ]; then echo "DATABASE_CONNECTION_URI=$DATABASE_URL" >> .env; fi
+RUN if [ -n "$POSTGRES_URL" ]; then echo "DATABASE_CONNECTION_URI=$POSTGRES_URL" >> .env; fi
 
 # Generate Prisma client FIRST - before TypeScript build
 RUN npx prisma generate --schema ./prisma/postgresql-schema.prisma

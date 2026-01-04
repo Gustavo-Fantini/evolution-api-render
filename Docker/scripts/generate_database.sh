@@ -2,8 +2,12 @@
 
 source ./Docker/scripts/env_functions.sh
 
+echo "=== generate_database.sh starting ==="
+
 # Always export env vars to ensure DATABASE_PROVIDER is available
 export_env_vars
+
+echo "DATABASE_PROVIDER after export_env_vars: '$DATABASE_PROVIDER'"
 
 if [[ "$DATABASE_PROVIDER" == "postgresql" || "$DATABASE_PROVIDER" == "mysql" || "$DATABASE_PROVIDER" == "psql_bouncer" ]]; then
     export DATABASE_URL

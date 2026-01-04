@@ -28,6 +28,8 @@ ENV DATABASE_URL=${DATABASE_URL}
 ENV TZ=America/Sao_Paulo
 ENV DOCKER_ENV=true
 
+# Force rebuild for Render - v2
+
 # Build application
 RUN npm run build
 

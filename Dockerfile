@@ -19,6 +19,7 @@ COPY ./src ./src
 COPY ./public ./public
 COPY ./prisma ./prisma
 COPY ./manager ./manager
+COPY ./.env.example ./.env
 COPY ./runWithProvider.js ./
 
 # Set environment variables for Render - FORCE POSTGRESQL
@@ -26,6 +27,9 @@ ENV DATABASE_PROVIDER=postgresql
 ENV DATABASE_URL=${DATABASE_URL}
 ENV TZ=America/Sao_Paulo
 ENV DOCKER_ENV=true
+
+# Override DATABASE_CONNECTION_URI if DATABASE_URL is provided (Render)
+RUN if [ -n "$DATABASE_URL" ]; then echo "DATABASE_CONNECTION_URI=$DATABASE_URL" >> .env; fi
 
 # Generate Prisma client FIRST - before TypeScript build
 RUN npx prisma generate --schema ./prisma/postgresql-schema.prisma

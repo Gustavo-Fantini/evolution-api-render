@@ -45,4 +45,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
   CMD curl -f http://localhost:8080/health || exit 1
 
 # Start the application - run migrations at runtime with Render DATABASE_URL
-CMD ["sh", "-c", "rm -rf ./prisma/migrations && cp -r ./prisma/postgresql-migrations ./prisma/migrations && DATABASE_URL=${DATABASE_URL} npx prisma migrate deploy --schema ./prisma/postgresql-schema.prisma && npm run start:prod"]
+CMD ["sh", "-c", "if [ -n \"$DATABASE_URL\" ]; then export DATABASE_CONNECTION_URI=\"$DATABASE_URL\"; fi && if [ -n \"$POSTGRES_URL\" ]; then export DATABASE_CONNECTION_URI=\"$POSTGRES_URL\"; fi && rm -rf ./prisma/migrations && cp -r ./prisma/postgresql-migrations ./prisma/migrations && npx prisma migrate deploy --schema ./prisma/postgresql-schema.prisma && npm run start:prod"]

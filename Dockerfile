@@ -21,20 +21,22 @@ COPY ./prisma ./prisma
 COPY ./manager ./manager
 COPY ./.env.example ./.env
 COPY ./runWithProvider.js ./
-COPY ./render-setup.sh ./
 
-# Set environment variables for Render
+# Set environment variables for Render - FORCE POSTGRESQL
 ENV DATABASE_PROVIDER=postgresql
 ENV DATABASE_URL=${DATABASE_URL}
 ENV TZ=America/Sao_Paulo
 ENV DOCKER_ENV=true
 
-# Make script executable
-RUN chmod +x ./render-setup.sh
-
-# Build and setup database
+# Build application
 RUN npm run build
-RUN ./render-setup.sh
+
+# Generate Prisma client directly - NO SCRIPTS
+RUN npx prisma generate --schema ./prisma/postgresql-schema.prisma
+
+# Deploy migrations directly - NO SCRIPTS  
+RUN rm -rf ./prisma/migrations && cp -r ./prisma/postgresql-migrations ./prisma/migrations
+RUN npx prisma migrate deploy --schema ./prisma/postgresql-schema.prisma
 
 EXPOSE 8080
 

@@ -34,15 +34,11 @@ RUN npx prisma generate --schema ./prisma/postgresql-schema.prisma
 # Build application AFTER Prisma client is generated
 RUN npm run build
 
-# Deploy migrations directly - NO SCRIPTS  
-RUN rm -rf ./prisma/migrations && cp -r ./prisma/postgresql-migrations ./prisma/migrations
-RUN npx prisma migrate deploy --schema ./prisma/postgresql-schema.prisma
-
 EXPOSE 8080
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
   CMD curl -f http://localhost:8080/health || exit 1
 
-# Start the application
-CMD ["npm", "run", "start:prod"]
+# Start the application - run migrations at runtime
+CMD ["sh", "-c", "rm -rf ./prisma/migrations && cp -r ./prisma/postgresql-migrations ./prisma/migrations && npx prisma migrate deploy --schema ./prisma/postgresql-schema.prisma && npm run start:prod"]

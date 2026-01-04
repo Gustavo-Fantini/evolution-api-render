@@ -40,5 +40,5 @@ EXPOSE 8080
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
   CMD curl -f http://localhost:8080/health || exit 1
 
-# Start the application - run migrations at runtime
-CMD ["sh", "-c", "rm -rf ./prisma/migrations && cp -r ./prisma/postgresql-migrations ./prisma/migrations && npx prisma migrate deploy --schema ./prisma/postgresql-schema.prisma && npm run start:prod"]
+# Start the application - run migrations at runtime with Render DATABASE_URL
+CMD ["sh", "-c", "rm -rf ./prisma/migrations && cp -r ./prisma/postgresql-migrations ./prisma/migrations && DATABASE_URL=${DATABASE_URL} npx prisma migrate deploy --schema ./prisma/postgresql-schema.prisma && npm run start:prod"]
